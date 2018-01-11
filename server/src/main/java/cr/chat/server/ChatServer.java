@@ -2,6 +2,7 @@ package cr.chat.server;
 
 import cr.chat.common.ChatMessageDecoder;
 import cr.chat.common.ChatMessageEncoder;
+import cr.chat.server.common.util.SpringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -58,7 +59,7 @@ public class ChatServer implements ApplicationListener<ContextRefreshedEvent> {
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         pipeline.addLast(new ChatMessageDecoder());
                         pipeline.addLast(new ChatMessageEncoder());
-                        pipeline.addLast(new ServerHandler());
+                        pipeline.addLast(SpringUtils.getBean(ServerHandler.class));
                     }
                 });
 
