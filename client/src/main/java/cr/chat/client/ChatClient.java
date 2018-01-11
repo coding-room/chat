@@ -1,6 +1,9 @@
 package cr.chat.client;
 
 
+import cr.chat.common.ChatMessage;
+import cr.chat.common.ChatMessageDecoder;
+import cr.chat.common.ChatMessageEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -11,6 +14,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 @Component
 @Slf4j
@@ -40,11 +45,8 @@ public class ChatClient implements ApplicationListener<ContextRefreshedEvent> {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-
-                            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-                            pipeline.addLast("decoder", new StringDecoder());
-                            pipeline.addLast("encoder", new StringEncoder());
-
+                            pipeline.addLast("decoder", new ChatMessageDecoder());
+                            pipeline.addLast("encoder", new ChatMessageEncoder());
                             // 客户端的逻辑
                             pipeline.addLast("handler", new ClientHandler());
                         }
@@ -59,7 +61,7 @@ public class ChatClient implements ApplicationListener<ContextRefreshedEvent> {
                     continue;
                 }
 
-                ch.writeAndFlush(line + "\r\n");
+                ch.writeAndFlush(new ChatMessage(new HashMap<>(),(line + "\r\n").getBytes()));
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();

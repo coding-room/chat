@@ -1,13 +1,14 @@
 package cr.chat.client;
 
+import cr.chat.common.ChatMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class ClientHandler extends SimpleChannelInboundHandler<String> {
+public class ClientHandler extends SimpleChannelInboundHandler<ChatMessage> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
 
-        System.out.println("Server say : " + msg);
+        System.out.println("Server say : " + new String(msg.getBody()));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cr.chat.server;
 
+import cr.chat.common.ChatMessageDecoder;
+import cr.chat.common.ChatMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -48,16 +50,14 @@ public class ChatServer implements ApplicationListener<ContextRefreshedEvent> {
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, backlog)
-                //注意是childOption
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
-                        pipeline.addLast(new StringDecoder());
-                        pipeline.addLast(new LengthFieldPrepender(2));
-                        pipeline.addLast(new StringEncoder());
+                        pipeline.addLast(new ChatMessageDecoder());
+                        pipeline.addLast(new ChatMessageEncoder());
                         pipeline.addLast(new ServerHandler());
                     }
                 });
