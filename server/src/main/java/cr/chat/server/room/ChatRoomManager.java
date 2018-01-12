@@ -34,6 +34,10 @@ public class ChatRoomManager {
         return chatRoomMap.get(code);
     }
 
+    public boolean checkExist(String code) {
+        return chatRoomMap.containsKey(code);
+    }
+
     public void removeRoom(String code) {
         chatRoomMap.remove(code);
     }

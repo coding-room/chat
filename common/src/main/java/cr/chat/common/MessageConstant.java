@@ -6,6 +6,8 @@ public interface MessageConstant {
      */
     String ACTION_HEADER_KEY = "action";
 
+    String ROME_CODE_HEAD_KEY = "ROME_CODE";
+
     /**
      * 创建名字
      */
@@ -24,6 +26,12 @@ public interface MessageConstant {
      * 离开房间
      */
     String LEAVE_ROOM = "LEAVE_ROOM";
+
+
+    /**
+     * 发送消息
+     */
+    String SEND_MESSAGE = "SEND_MSG";
 
     String ERROR = "ERROR";
 }

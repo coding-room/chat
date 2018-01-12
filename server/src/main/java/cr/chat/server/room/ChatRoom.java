@@ -54,4 +54,9 @@ public class ChatRoom {
         }
     }
 
+
+    public void sendMessage(ClientDomain client,String message) {
+
+    }
+
 }

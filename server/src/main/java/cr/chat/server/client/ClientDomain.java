@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Component
@@ -37,10 +39,13 @@ public class ClientDomain {
      * 所在房间
      */
     private List<ChatRoom> chatRooms = new ArrayList<>();
+    private Map<String, ChatRoom> chatRoomMap = new HashMap<>();
 
 
     public void createRoom(String code, String name) throws ChatRoomExistException {
-        chatRoomManager.createChatRoom(this, code, name);
+        ChatRoom chatRoom = chatRoomManager.createChatRoom(this, code, name);
+        chatRooms.add(chatRoom);
+        chatRoomMap.put(code, chatRoom);
         log.info("成功加入房间，'{}'->'{}'", code, name);
     }
 
@@ -48,6 +53,7 @@ public class ClientDomain {
         ChatRoom chatRoom = chatRoomManager.getChatRoom(code);
         if (chatRoom != null && chatRooms.contains(chatRoom)) {
             chatRooms.remove(chatRoom);
+            chatRoomMap.remove(code);
             chatRoom.leave(this);
             //TODO 发送消息
             log.info("成功离开房间，'{}'", code);
@@ -62,11 +68,28 @@ public class ClientDomain {
         if (chatRoom != null) {
             chatRoom.join(this);
             chatRooms.add(chatRoom);
+            chatRoomMap.put(code, chatRoom);
             log.info("成功加入房间，'{}'", code);
             //TODO 发送消息
             return true;
         }
         log.info("房间编号'{}'不存在", code);
+        return false;
+    }
+
+
+    /**
+     * 发送消息
+     * @param code
+     * @param message
+     * @return
+     */
+    public boolean sendMessage(String code, String message) {
+        if (chatRoomMap.containsKey(code)) {
+            ChatRoom chatRoom = chatRoomMap.get(code);
+            chatRoom.sendMessage(this, message);
+            return true;
+        }
         return false;
     }
 

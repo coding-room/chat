@@ -1,9 +1,12 @@
 package cr.chat.client;
 
 
+import com.alibaba.fastjson.JSON;
 import cr.chat.common.ChatMessage;
 import cr.chat.common.ChatMessageDecoder;
 import cr.chat.common.ChatMessageEncoder;
+import cr.chat.common.MessageConstant;
+import cr.chat.common.message.CreateRoom;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -12,12 +15,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -26,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -33,6 +33,9 @@ public class ChatClient implements ApplicationListener<ContextRefreshedEvent> {
 
     public static String host = "127.0.0.1";
     public static int port = 9090;
+
+    @Autowired
+    private MessageManager messageManager;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -55,13 +58,17 @@ public class ChatClient implements ApplicationListener<ContextRefreshedEvent> {
             Channel ch = b.connect(host, port).sync().channel();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            for (;;) {
+            for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     continue;
                 }
 
-                ch.writeAndFlush(new ChatMessage(new HashMap<>(),(line + "\r\n").getBytes()));
+                Map<String, String> headers = new HashMap<>();
+                CreateRoom createRoom = new CreateRoom("beldon", "beldon");
+                headers.put(MessageConstant.ACTION_HEADER_KEY, MessageConstant.CREATE_NAME);
+                ChatMessage msg = new ChatMessage(headers, JSON.toJSONString(JSON.toJSONString(createRoom)).getBytes());
+                ch.writeAndFlush(msg);
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
