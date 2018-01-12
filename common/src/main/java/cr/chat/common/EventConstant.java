@@ -1,16 +1,12 @@
 package cr.chat.common;
 
-public interface MessageConstant {
-
-    String EVENT_HEADER_KEY = "";
-
-    /**
-     * 操作header key
-     */
-    String ACTION_HEADER_KEY = "action";
-
-    String ROME_CODE_HEAD_KEY = "ROME_CODE";
-
+/**
+ * 事件
+ *
+ * @author Beldon
+ * @create 2018-01-12 下午3:03
+ */
+public interface EventConstant {
     /**
      * 创建名字
      */
@@ -30,6 +26,9 @@ public interface MessageConstant {
      */
     String LEAVE_ROOM = "LEAVE_ROOM";
 
+    /**
+     * 列出房间
+     */
     String LIST_ROOM = "LIST_ROOM";
 
 
@@ -38,7 +37,8 @@ public interface MessageConstant {
      */
     String SEND_MESSAGE = "SEND_MSG";
 
+    /**
+     * 错误新消息
+     */
     String ERROR = "ERROR";
-
-
 }
