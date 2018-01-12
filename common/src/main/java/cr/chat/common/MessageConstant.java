@@ -27,6 +27,8 @@ public interface MessageConstant {
      */
     String LEAVE_ROOM = "LEAVE_ROOM";
 
+    String LIST_ROOM = "LIST_ROOM";
+
 
     /**
      * 发送消息

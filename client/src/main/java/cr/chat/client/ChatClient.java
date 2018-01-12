@@ -6,7 +6,10 @@ import cr.chat.common.ChatMessage;
 import cr.chat.common.ChatMessageDecoder;
 import cr.chat.common.ChatMessageEncoder;
 import cr.chat.common.MessageConstant;
+import cr.chat.common.message.BaseMessage;
+import cr.chat.common.message.CreateName;
 import cr.chat.common.message.CreateRoom;
+import cr.chat.common.message.TextMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -58,16 +61,40 @@ public class ChatClient implements ApplicationListener<ContextRefreshedEvent> {
             Channel ch = b.connect(host, port).sync().channel();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            Map<String, String> headers = new HashMap<>();
+            boolean creName = false;
             for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     continue;
                 }
 
-                Map<String, String> headers = new HashMap<>();
-                CreateRoom createRoom = new CreateRoom("beldon", "beldon");
-                headers.put(MessageConstant.ACTION_HEADER_KEY, MessageConstant.CREATE_NAME);
-                ChatMessage msg = new ChatMessage(headers, JSON.toJSONString(JSON.toJSONString(createRoom)).getBytes());
+
+                BaseMessage baseMessage;
+                switch (line) {
+                    case "name":
+                        headers.put(MessageConstant.ACTION_HEADER_KEY, MessageConstant.CREATE_NAME);
+                        CreateName createName = new CreateName();
+                        createName.setName("Beldon");
+                        createName.setHeaders(headers);
+                        baseMessage = createName;
+                        break;
+                    case "creRoom":
+                        headers.put(MessageConstant.ACTION_HEADER_KEY, MessageConstant.CREATE_ROOM);
+                        CreateRoom createRoom = new CreateRoom();
+                        createRoom.setCode("beldon");
+                        createRoom.setName("beldon");
+                        createRoom.setHeaders(headers);
+                        baseMessage = createRoom;
+                        break;
+                    case "list":
+                        headers.put(MessageConstant.ACTION_HEADER_KEY, MessageConstant.LIST_ROOM);
+                    default:
+                        baseMessage = new TextMessage();
+                }
+
+
+                ChatMessage msg = new ChatMessage(headers, JSON.toJSONString(baseMessage).getBytes());
                 ch.writeAndFlush(msg);
             }
         } catch (InterruptedException | IOException e) {

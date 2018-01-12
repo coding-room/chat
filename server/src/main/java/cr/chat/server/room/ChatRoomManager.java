@@ -34,6 +34,12 @@ public class ChatRoomManager {
         return chatRoomMap.get(code);
     }
 
+    public List<ChatRoom> getALl() {
+        List<ChatRoom> all = new ArrayList<>();
+        chatRoomMap.forEach((k,v)-> all.add(v));
+        return all;
+    }
+
     public boolean checkExist(String code) {
         return chatRoomMap.containsKey(code);
     }

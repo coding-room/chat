@@ -1,13 +1,13 @@
 package cr.chat.common.message;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+/**
+ * 创建房间
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateRoom {
+public class CreateRoom extends BaseMessage {
     private String name;
     private String code;
+
 }

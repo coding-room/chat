@@ -55,7 +55,6 @@ public class ClientDomain {
             chatRooms.remove(chatRoom);
             chatRoomMap.remove(code);
             chatRoom.leave(this);
-            //TODO 发送消息
             log.info("成功离开房间，'{}'", code);
             return true;
         }
@@ -70,7 +69,6 @@ public class ClientDomain {
             chatRooms.add(chatRoom);
             chatRoomMap.put(code, chatRoom);
             log.info("成功加入房间，'{}'", code);
-            //TODO 发送消息
             return true;
         }
         log.info("房间编号'{}'不存在", code);
